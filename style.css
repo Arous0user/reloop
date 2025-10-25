@@ -1,0 +1,59 @@
+/* Custom styles for the landing page */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.feature-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.tech-stack-card {
+  transition: all 0.3s ease;
+}
+
+.tech-stack-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.1), 0 2px 4px -1px rgba(102, 126, 234, 0.06);
+}
+
+.btn-primary {
+  transition: all 0.3s ease;
+  background-color: #667eea;
+}
+
+.btn-primary:hover {
+  background-color: #5a67d8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary {
+  transition: all 0.3s ease;
+  background-color: #2d3748;
+}
+
+.btn-secondary:hover {
+  background-color: #1a202c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.footer-link {
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #fff;
+  transform: scale(1.1);
+}

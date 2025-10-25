@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RE-loop - Multi-Vendor E-Commerce Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+                <h1 class="text-3xl font-bold text-indigo-600">RE-loop</h1>
+                <div class="flex space-x-4">
+                    <a href="frontend/public/index.html" class="btn-primary text-white px-4 py-2 rounded-md font-medium hover:bg-indigo-700">
+                        View Frontend
+                    </a>
+                    <a href="backend/src/server.js" class="btn-secondary text-white px-4 py-2 rounded-md font-medium hover:bg-gray-900">
+                        View Backend
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            <!-- Hero Section -->
+            <section class="hero-gradient text-white py-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-6">Multi-Vendor E-Commerce Marketplace</h1>
+                    <p class="text-xl mb-8">A fully functional platform combining features of Amazon, Flipkart, and OLX</p>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <div class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold">
+                            <i class="fas fa-shopping-cart mr-2"></i>Buy
+                        </div>
+                        <div class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold">
+                            <i class="fas fa-store mr-2"></i>Sell
+                        </div>
+                        <div class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold">
+                            <i class="fas fa-users mr-2"></i>Connect
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Project Overview -->
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold text-center mb-12">Project Overview</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                            <div class="text-indigo-600 text-3xl mb-4">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Frontend</h3>
+                            <p class="text-gray-600">Built with React.js, Tailwind CSS, and modern JavaScript for a responsive, fast user experience.</p>
+                        </div>
+                        <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                            <div class="text-indigo-600 text-3xl mb-4">
+                                <i class="fas fa-server"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Backend</h3>
+                            <p class="text-gray-600">Powered by Node.js, Express.js, and PostgreSQL with Prisma ORM for robust data management.</p>
+                        </div>
+                        <div class="feature-card bg-white rounded-lg shadow-md p-6">
+                            <div class="text-indigo-600 text-3xl mb-4">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">AI Integration</h3>
+                            <p class="text-gray-600">Enhanced with Gemini 2.5 GLG for product descriptions, search suggestions, and content moderation.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section class="py-16 bg-gray-50">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold text-center mb-12">Key Features</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="tech-stack-card bg-white rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg mb-2">User Roles</h3>
+                            <ul class="text-gray-600 list-disc list-inside">
+                                <li>Buyers</li>
+                                <li>Sellers</li>
+                                <li>Admins</li>
+                            </ul>
+                        </div>
+                        <div class="tech-stack-card bg-white rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg mb-2">Product Management</h3>
+                            <ul class="text-gray-600 list-disc list-inside">
+                                <li>Create/Edit/Delete</li>
+                                <li>Image Upload</li>
+                                <li>Search & Filter</li>
+                            </ul>
+                        </div>
+                        <div class="tech-stack-card bg-white rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg mb-2">Shopping</h3>
+                            <ul class="text-gray-600 list-disc list-inside">
+                                <li>Cart System</li>
+                                <li>Secure Payments</li>
+                                <li>Order Tracking</li>
+                            </ul>
+                        </div>
+                        <div class="tech-stack-card bg-white rounded-lg shadow-md p-6">
+                            <h3 class="font-bold text-lg mb-2">AI Features</h3>
+                            <ul class="text-gray-600 list-disc list-inside">
+                                <li>Smart Descriptions</li>
+                                <li>Content Moderation</li>
+                                <li>Search Assistance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tech Stack -->
+            <section class="py-16">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-3xl font-bold text-center mb-12">Technology Stack</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-2xl font-bold text-indigo-600 mb-4">Frontend</h3>
+                            <div class="tech-stack-card bg-white rounded-lg shadow-md p-6">
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        React.js with Hooks
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        React Router v6
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        Tailwind CSS
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        Context API
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-indigo-600 mb-4">Backend</h3>
+                            <div class="tech-stack-card bg-white rounded-lg shadow-md p-6">
+                                <ul class="space-y-2">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        Node.js & Express.js
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        PostgreSQL with Prisma
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        JWT Authentication
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                        AWS S3 Integration
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-4">RE-loop E-Commerce Platform</h3>
+                    <p class="text-gray-400 mb-6">A fully functional multi-vendor marketplace with modern web technologies</p>
+                    <div class="flex justify-center space-x-6">
+                        <a href="frontend/public/index.html" class="footer-link text-gray-400 hover:text-white">
+                            <i class="fas fa-desktop text-2xl"></i>
+                        </a>
+                        <a href="backend/src/server.js" class="footer-link text-gray-400 hover:text-white">
+                            <i class="fas fa-server text-2xl"></i>
+                        </a>
+                        <a href="README.md" class="footer-link text-gray-400 hover:text-white">
+                            <i class="fas fa-book text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; 2025 RE-loop. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
