@@ -58,6 +58,10 @@ const Checkout = () => {
 
       const { id, amount, currency } = orderResponse.data;
 
+      console.log('Razorpay Order ID:', id);
+      console.log('Razorpay Amount:', amount);
+      console.log('Razorpay Currency:', currency);
+
       const options = {
         key: process.env.REACT_APP_RAZORPAY_KEY_ID, // Your Razorpay Key ID
         amount: amount,
@@ -108,6 +112,7 @@ const Checkout = () => {
           color: '#3399cc',
         },
       };
+      console.log('Razorpay Options:', options);
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } catch (error) {
