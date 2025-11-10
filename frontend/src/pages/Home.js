@@ -1,112 +1,80 @@
-import React, { useState } from 'react';
-import { useProducts } from '../context/ProductContext';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductCard from '../components/ProductCard';
-import { categories } from '../utils/categories';
-import { Link } from 'react-router-dom'; // Import Link
+import BACKEND_URL from '../config';
+
 
 const Home = () => {
-  const { products, searchProducts, loading } = useProducts(); // Get loading state
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/products`);
+        setProducts(response.data.products);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      const results = searchProducts(searchQuery);
-      setSearchResults(results);
-    } else {
-      setSearchResults([]);
-    }
+    setSearchTerm(e.target.value);
   };
 
-  // Get featured products (first 4 for demo)
-  const featuredProducts = products.slice(0, 4);
+  const filteredProducts = products.filter(product =>
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="bg-white">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-secondary text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-7xl font-extrabold mb-8">Discover Amazing Products</h1>
-          <p className="text-xl md:text-2xl mb-10">From trusted sellers around the world</p>
-          
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
-            <div className="flex">
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for products..." 
-                className="flex-grow px-4 py-3 rounded-l-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-              <button 
-                type="submit"
-                className="bg-primary hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-r-lg transition duration-300 transform hover:scale-105"
-              >
-                Search
-              </button>
-            </div>
-          </form>
+    <div>
+      <div 
+        className="max-w-7xl mx-auto px-4 py-8" 
+        style={{
+          backgroundImage: `url(https://img.freepik.com/free-photo/colorful-festival-colors-spread-dark-surface_23-2148054187.jpg?semt=ais_hybrid&w=740&q=80)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white">Discover Amazing Products</h1>
+          <p className="text-gray-200">From trusted sellers around the world</p>
         </div>
-      </section>
-
-      {/* Loading Indicator */}
-      {loading && (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Products...</h3>
-          <p className="text-gray-600">Please wait while we fetch the products.</p>
+        <div className="mb-8">
+          <div className="flex justify-center">
+            <input
+              type="text"
+              placeholder="Search for products..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full max-w-lg px-4 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+            />
+            <button className="px-4 py-2 bg-primary text-white rounded-r-md hover:bg-primary-dark">
+              Search
+            </button>
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Search Results */}
-      {!loading && searchResults.length > 0 && (
-        <section className="py-12 bg-powder-blue">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-base-text mb-6">
-              Search Results for "{searchQuery}"
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {searchResults.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured Products</h2>
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {filteredProducts.slice(0, 8).map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
-        </section>
-      )}
+        ) : (
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
+            <p className="text-gray-600">Try adjusting your search.</p>
+          </div>
+        )}
+      </div>
 
-      {/* Featured Categories */}
-      {!loading && (
-        <section className="py-16 bg-powder-blue">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-center mb-12 text-base-text">Shop by Category</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {categories.slice(0, 3).map((category, index) => (
-                <Link to={`/products?category=${category.name}`} key={index} className="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 cursor-pointer">
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2 text-base-text">{category.name}</h3>
-                    <p className="text-gray-600 mb-4">Find the best {category.name.toLowerCase()} products</p>
-                    {/* Removed the button as the entire box is clickable */}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Featured Products */}
-      {!loading && (
-        <section className="py-16 bg-powder-blue">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-4xl font-bold text-center mb-12 text-base-text">Featured Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {featuredProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
     </div>
   );
 };

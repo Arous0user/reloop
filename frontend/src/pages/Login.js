@@ -22,14 +22,7 @@ const Login = () => {
       const result = await login(email, password);
       
       if (result.success) {
-        // Redirect based on user role
-        if (result.user.role === 'admin') {
-          navigate('/admin');
-        } else if (result.user.role === 'seller') {
-          navigate('/seller/dashboard');
-        } else {
-          navigate('/');
-        }
+        navigate('/'); // Always redirect to home page after successful login
       } else {
         setError(result.error || 'Failed to log in');
       }
@@ -120,7 +113,7 @@ const Login = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary hover:text-primary-dark">
+                <a href="javascript:void(0)" className="font-medium text-primary hover:text-primary-dark">
                   Forgot your password?
                 </a>
               </div>

@@ -52,11 +52,6 @@ const Footer = () => {
     window.open('https://www.instagram.com/re_loop_o1?igsh=bWI5d2UwdzIwcHc5', '_blank', 'noopener,noreferrer');
   };
 
-  const handleAboutClick = (e) => {
-    e.preventDefault();
-    navigate('/about');
-  };
-
   return (
     <footer className="footer">
       <div className="footer-back-to-top" onClick={scrollToTop}>
@@ -78,16 +73,16 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Make Money with Us</h3>
           <ul>
-            <li><a href="#" onClick={handleSellClick}>Sell on RE-loop</a></li>
-            <li><a href="#" onClick={handleBecomeSellerClick}>Become a Seller</a></li>
-            <li><a href="#" onClick={handleAdvertiseClick}>Advertise Your Products</a></li>
+            <li><a href="javascript:void(0)" onClick={handleSellClick}>Sell on RE-loop</a></li>
+            <li><a href="javascript:void(0)" onClick={handleBecomeSellerClick}>Become a Seller</a></li>
+            <li><a href="javascript:void(0)" onClick={handleAdvertiseClick}>Advertise Your Products</a></li>
           </ul>
         </div>
         <div className="footer-section">
           <h3>Let Us Help You</h3>
           <ul>
-            <li><a href="#" onClick={handleYourAccountClick}>Your Account</a></li>
-            <li><a href="#" onClick={handleHelpClick}>Help</a></li>
+            <li><a href="javascript:void(0)" onClick={handleYourAccountClick}>Your Account</a></li>
+            <li><a href="javascript:void(0)" onClick={handleHelpClick}>Help</a></li>
             <li><a href="/terms-and-conditions">Terms & Conditions</a></li>
           </ul>
         </div>

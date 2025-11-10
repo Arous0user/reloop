@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../utils/currency';
 import { useAuth } from '../context/AuthContext';
