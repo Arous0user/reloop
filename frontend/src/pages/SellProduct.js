@@ -4,6 +4,7 @@ import { useProducts } from '../context/ProductContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import BACKEND_URL from '../config';
 
 const SellProduct = () => {
   const { refreshProducts } = useProducts();
@@ -26,6 +27,10 @@ const SellProduct = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
+    if (files.length > 10) {
+      alert('You can only upload a maximum of 10 images.');
+      return;
+    }
     if (files.length > 0) {
       setImages(files);
       const newImagePreviews = [];
@@ -45,11 +50,6 @@ const SellProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (images.length < 5) {
-      alert('Please upload at least 5 images.');
-      return;
-    }
-
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
@@ -62,7 +62,7 @@ const SellProduct = () => {
 
     try {
       const token = localStorage.getItem('token'); 
-      await axios.post('http://localhost:5001/api/products', formData, {
+      await axios.post(`${BACKEND_URL}/api/products`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`
@@ -92,6 +92,7 @@ const SellProduct = () => {
                 name="title"
                 type="text"
                 required
+                autoComplete="off"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -124,6 +125,7 @@ const SellProduct = () => {
                 name="price"
                 type="number"
                 required
+                autoComplete="off"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
@@ -140,12 +142,14 @@ const SellProduct = () => {
                 name="stock"
                 type="number"
                 required
+                autoComplete="off"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
                 className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
               />
             </div>
           </div>
+
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-gray-700">
               Category
@@ -167,16 +171,24 @@ const SellProduct = () => {
             </div>
           </div>
           <div>
-            <label htmlFor="images" className="block text-sm font-medium text-gray-700">
-              Product Images (min 5)
+            <label htmlFor="image-upload" className="block text-sm font-medium text-gray-700">
+              Product Images
             </label>
+            <div className="mt-1 mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700">
+              <p><strong>Note:</strong></p>
+              <ul className="list-disc list-inside ml-4">
+                <li>Maximum 10 images per product.</li>
+                <li>Maximum size: 5MB per image.</li>
+                <li>Supported formats: JPG, PNG, GIF.</li>
+              </ul>
+            </div>
             <div className="mt-1 flex items-center">
               <div className="flex flex-wrap gap-2">
                 {imagePreviews.map((preview, index) => (
-                  <img key={index} src={preview} alt={`Product preview ${index + 1}`} className="h-12 w-12 object-cover rounded-full" />
+                  <img key={index} src={preview} alt={`Product preview ${index + 1}`} className="h-16 w-16 object-cover rounded-md" />
                 ))}
                 {imagePreviews.length === 0 && (
-                  <span className="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                  <span className="inline-block h-16 w-16 overflow-hidden bg-gray-100 rounded-md">
                     <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M24 20.993V24H0v-2.993A2 2 0 002 19h20a2 2 0 002-2.007zM12 13c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7z" />
                     </svg>
@@ -185,10 +197,10 @@ const SellProduct = () => {
               </div>
               <label
                 htmlFor="image-upload"
-                className="ml-5 bg-primary py-2 px-4 border border-transparent rounded-md shadow-sm text-sm leading-4 font-medium text-white hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer transition duration-300 transform hover:scale-105 flex items-center space-x-2"
+                className="ml-5 bg-cyan-500 py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm leading-4 font-medium text-white hover:bg-lime-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary cursor-pointer transition duration-300 transform hover:scale-105 flex items-center space-x-2"
               >
                 <i className="fas fa-cloud-upload-alt"></i> {/* Added icon */}
-                <span>Upload files</span>
+                <span>Upload image</span>
                 <input id="image-upload" name="images" type="file" multiple className="sr-only" onChange={handleImageChange} />
               </label>
             </div>

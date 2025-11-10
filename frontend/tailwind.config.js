@@ -20,6 +20,8 @@ module.exports = {
         },
         'base-text': '#1F2937',
         'light-gray': '#F3F4F6',
+        'silver': '#C0C0C0',
+        'navy-blue': '#F8F3EA',
       },
     },
   },

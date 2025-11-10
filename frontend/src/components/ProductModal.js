@@ -50,7 +50,7 @@ const ProductModal = ({ isOpen, onClose }) => {
     try {
       // Assuming you have an authentication token
       const token = localStorage.getItem('token'); 
-      await axios.post('http://localhost:5001/api/products', formData, {
+      await axios.post(`${BACKEND_URL}/api/products`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

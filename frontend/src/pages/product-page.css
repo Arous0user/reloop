@@ -1,0 +1,45 @@
+.product-search-bar {
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    margin: 2rem auto;
+}
+
+.product-search-bar input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.product-search-bar input:focus {
+    outline: none;
+    border-color: #4e54c8;
+    box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
+}
+
+.product-search-bar button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+}
+
+.product-search-bar button:hover {
+    background: linear-gradient(90deg, #3c42a1, #7c82e6);
+}

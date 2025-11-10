@@ -1,21 +1,87 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Removed useLocation
-import ProductCard from '../components/ProductCard';
+import { useParams, useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 import BACKEND_URL from '../config';
 import { useAuth } from '../context/AuthContext';
+import PurchaseHistory from '../components/PurchaseHistory';
+import './UserProfile.css';
 
 const UserProfile = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const { logout } = useAuth();
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [showWalletInfo, setShowWalletInfo] = useState(false); // State for wallet info popup
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [editedEmail, setEditedEmail] = useState('');
+  const [editedPhone, setEditedPhone] = useState('');
+  const [editedState, setEditedState] = useState('');
+  const [editedPinCode, setEditedPinCode] = useState('');
+  const [editedCity, setEditedCity] = useState('');
+  const [editedHouseNo, setEditedHouseNo] = useState('');
+  const [editedLocality, setEditedLocality] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const { logout, user: currentUser } = useAuth();
+  const currentUserId = currentUser?.id;
   const navigate = useNavigate();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  // Removed isFromSellerLink state
+  const [isCopied, setIsCopied] = useState(false);
 
-  // Removed useEffect related to sessionStorage
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setIsCopied(true);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    });
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedName(user.name);
+    setEditedEmail(user.email);
+    setEditedPhone(user.phone || '');
+    setEditedHouseNo(user.address?.houseNo || '');
+    setEditedCity(user.address?.city || '');
+    setEditedState(user.address?.state || '');
+    setEditedPinCode(user.address?.pinCode || '');
+    setEditedLocality(user.address?.locality || '');
+  };
+
+  const handleSave = async () => {
+    if (editedPhone.length !== 10) {
+      setPhoneError('Wrong number');
+      return;
+    }
+    setPhoneError('');
+
+    try {
+      const updatedUser = {
+        name: editedName,
+        email: editedEmail,
+        phone: editedPhone,
+        address: {
+          houseNo: editedHouseNo,
+          locality: editedLocality,
+          city: editedCity,
+          state: editedState,
+          pinCode: editedPinCode,
+        },
+      };
+
+      await axios.put(`${BACKEND_URL}/api/auth/profile`, updatedUser, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      setUser({ ...user, ...updatedUser });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to save user details:', error);
+    }
+  };
 
   const handleLogout = () => {
     setShowLogoutConfirm(true);
@@ -31,114 +97,448 @@ const UserProfile = () => {
     setShowLogoutConfirm(false);
   };
 
+  const handleBecomeSeller = async () => {
+    try {
+      await axios.put(`${BACKEND_URL}/api/auth/become-seller`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      
+      setUser({ ...user, isSeller: true });
+    } catch (error) {
+      console.error('Failed to become seller:', error);
+    }
+  };
+
+  // Calculate wallet balance based on seller's orders
+  const calculateWalletBalance = async (userId) => {
+    try {
+      // Get wallet balance from the new API endpoint
+      const response = await axios.get(`${BACKEND_URL}/api/wallet/${userId}`);
+      setWalletBalance(response.data.balance);
+    } catch (error) {
+      console.error('Failed to calculate wallet balance:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/auth/${userId}`);
         const { user } = response.data;
         setUser(user);
-        setProducts(user.products || []);
-        setReviews(user.reviewsReceived || []);
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
-        // Handle error, e.g., redirect to 404 or show error message
       }
     };
 
     fetchUserProfile();
   }, [userId]);
+  
+  useEffect(() => {
+    if (userId) {
+      calculateWalletBalance(userId);
+    }
+  }, [userId]);
 
   if (!user) {
     return <div>Loading...</div>;
-  };
-
-  console.log('Logged-in user:', user);
-  console.log('Profile userId from params:', userId);
-  console.log(`Is current user's profile:`, user && user.id === userId);
+  }
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="text-4xl font-bold text-gray-500">{user.name.charAt(0)}</span>
+      <div className="bg-navy-blue min-h-screen py-8">
+        <div className="user-profile-container text-gray-800 my-8 mx-auto">
+          <div className="user-profile-header">
+          <div className="user-profile-avatar">
+            <span className="user-profile-avatar-letter">{user.name.charAt(0)}</span>
+          </div>
+          <div className="user-profile-info">
+            <h1 className="user-profile-name">{user.name}</h1>
+          </div>
+          <div className="user-profile-actions">
+            {currentUserId && currentUserId !== userId && user.isSeller && (
+              <button
+                onClick={() => navigate(`/seller/${userId}/products`)}
+                className="btn btn-secondary"
+              >
+                Buy Products
+              </button>
+            )}
+          </div>
+          <div className="user-profile-header-right">
+            {user.isSeller && (
+              <div className="wallet-container">
+                <div 
+                  className="wallet-display bg-green-500 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => setShowWalletInfo(true)}
+                >
+                  <div className="wallet-label">Wallet</div>
+                  <div className="wallet-balance">₹{walletBalance.toFixed(2)}</div>
+                </div>
+
+                {showWalletInfo && (
+                  <div className="modal-overlay">
+                    <div className="modal-content">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3>Wallet Information</h3>
+                        <button onClick={() => setShowWalletInfo(false)} className="text-gray-500 hover:text-gray-700">
+                          <span className="sr-only">Close</span>
+                          <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <p>
+                        Current Balance: <span>₹{walletBalance.toFixed(2)}</span>
+                      </p>
+                      <p className="note">
+                        <span>Note:</span> Withdrawal is only possible when products are verified by the admin.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-md">
+
+                  <div className="user-details-form">
+
+                    <div className="form-header">
+
+                      <h2>Details</h2>
+
+                      {isEditing ? (
+
+                        <div>
+
+                          <button
+
+                            onClick={handleSave}
+
+                            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+
+                          >
+
+                            Save
+
+                          </button>
+
+                                            <button
+
+                                              onClick={() => setIsEditing(false)}
+
+                                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+
+                                            >
+
+                                              Cancel
+
+                                            </button>
+
+                        </div>
+
+                      ) : (
+
+                        <button
+
+                          onClick={handleEdit}
+
+                          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+
+                        >
+
+                          Edit
+
+                        </button>
+
+                      )}
+
+                    </div>
+
+                    {isEditing ? (
+
+                      <div className="form-body">
+
+                        <div className="form-group">
+
+                          <label>Name:</label>
+
+                          <input
+
+                            type="text"
+
+                            value={editedName}
+
+                            onChange={(e) => setEditedName(e.target.value)}
+
+                          />
+
+                        </div>
+
+                        <div className="form-group">
+
+                          <label>Email:</label>
+
+                          <input
+
+                            type="email"
+
+                            value={editedEmail}
+
+                            disabled
+
+                          />
+
+                        </div>
+
+                        <div className="form-group">
+
+                          <label>Phone:</label>
+
+                          <input
+
+                            type="text"
+
+                            pattern="[0-9]*"
+
+                            inputMode="numeric"
+
+                            maxLength="10"
+
+                            value={editedPhone}
+
+                            onChange={(e) => {
+
+                              const re = /^[0-9\b]+$/;
+
+                              if (e.target.value === '' || (re.test(e.target.value) && e.target.value.length <= 10)) {
+
+                                setEditedPhone(e.target.value);
+
+                              }
+
+                            }}
+
+                          />
+
+                          {phoneError && <p className="error-message">{phoneError}</p>}
+
+                        </div>
+
+                        <h3 className="text-xl font-bold mt-4 col-span-2">Address</h3>
+
+                        <div className="form-group">
+
+                          <label>House No:</label>
+
+                          <input
+
+                            type="text"
+
+                            value={editedHouseNo}
+
+                            onChange={(e) => setEditedHouseNo(e.target.value)}
+
+                          />
+
+                        </div>
+
+                        <div className="form-group">
+
+                          <label>City:</label>
+
+                          <input
+
+                            type="text"
+
+                            value={editedCity}
+
+                            onChange={(e) => setEditedCity(e.target.value)}
+
+                          />
+
+                        </div>
+
+                        <div className="form-group">
+
+                          <label>State:</label>
+
+                          <input
+
+                            type="text"
+
+                            value={editedState}
+
+                            onChange={(e) => setEditedState(e.target.value)}
+
+                          />
+
+                        </div>
+
+                        <div className="form-group">
+
+                          <label>Pin Code:</label>
+
+                          <input
+
+                            type="text"
+
+                            pattern="[0-9]*"
+
+                            inputMode="numeric"
+
+                            maxLength="6"
+
+                            value={editedPinCode}
+
+                            onChange={(e) => {
+
+                              const re = /^[0-9\b]+$/;
+
+                              if (e.target.value === '' || (re.test(e.target.value) && e.target.value.length <= 6)) {
+
+                                setEditedPinCode(e.target.value);
+
+                              }
+
+                            }}
+
+                          />
+
+                        </div>
+
+                        <div className="form-group">
+
+                          <label>Locality/Landmark:</label>
+
+                          <input
+
+                            type="text"
+
+                            value={editedLocality}
+
+                            onChange={(e) => setEditedLocality(e.target.value)}
+
+                          />
+
+                        </div>
+
+                      </div>
+
+                    ) : (
+
+                      <div className="form-body">
+
+                        <p><span>Name:</span> {user.name}</p>
+
+                        <p><span>Email:</span> {user.email}</p>
+
+                        <p><span>Phone:</span> {user.phone || 'N/A'}</p>
+
+                        <h3 className="text-xl font-bold mt-4 col-span-2">Address</h3>
+
+                        <p><span>House No:</span> {user.address?.houseNo || 'N/A'}</p>
+
+                        <p><span>Locality/Landmark:</span> {user.address?.locality || 'N/A'}</p>
+
+                        <p><span>City:</span> {user.address?.city || 'N/A'}</p>
+
+                        <p><span>State:</span> {user.address?.state || 'N/A'}</p>
+
+                        <p><span>Pin Code:</span> {user.address?.pinCode || 'N/A'}</p>
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+        
+
+                {currentUser && currentUser.id === userId && !user.isSeller && (
+
+                  <div className="become-seller-container">
+
+                    <button
+
+                      onClick={handleBecomeSeller}
+
+                      className="btn btn-primary"
+
+                    >
+
+                      Become a Seller
+
+                    </button>
+
+                  </div>
+
+                )}
+
+        {currentUser && currentUser.id === userId && (
+          <div className="purchase-history-container">
+            <PurchaseHistory userId={userId} />
+          </div>
+        )}
+
+        {currentUser && currentUser.id === userId && (
+          <div className="referral-code-container bg-white p-6 rounded-lg shadow-md mt-8 text-center">
+            <h2 className="text-xl font-bold">Your Referral Code</h2>
+            <p 
+              className="text-lg font-mono cursor-pointer"
+              onClick={() => copyToClipboard(user.referralCode)}
+            >
+              {isCopied ? 'Copied!' : user.referralCode}
+            </p>
+            <div className="terms-and-conditions mt-4 text-left">
+              <h3 className="text-lg font-bold">Terms and Conditions</h3>
+              <ul className="list-disc list-inside mt-2">
+                <li>Referrer gets a 1% commission in their wallet on the successful purchase made by the referred user.</li>
+                <li>Referred user gets a 7-day extended warranty on their purchased product.</li>
+              </ul>
             </div>
           </div>
-          <div className="ml-8">
-            <div className="flex items-center justify-between"> {/* Added flex and justify-between */}
-              <h1 className="text-3xl font-bold text-base-text">{user.name}</h1>
-
-            </div>
-
-            <div className="flex items-center mt-4">
-              <div className="mr-8">
-                <span className="font-bold">Seller Rating:</span> {user.sellerRating || 'N/A'}
-              </div>
-              <div>
-                <span className="font-bold">Buyer Rating:</span> {user.buyerRating || 'N/A'}
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
+      </div>
       </div>
 
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold text-base-text mb-4">Products for Sale</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold text-base-text mb-4">Reviews</h2>
-        <div className="bg-white rounded-lg shadow-md p-8">
-          {reviews.length > 0 ? (
-            <ul className="space-y-8">
-              {reviews.map((review) => (
-                <li key={review.id}>
-                  {/* Review item */}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-gray-600">No reviews yet.</p>
-          )}
-        </div>
-      </div>
-    </div>
-
-    {/* Logout Confirmation Dialog */}
-    {showLogoutConfirm && (
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-        <div className="relative mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-          <div className="mt-3 text-center">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Confirm Logout</h3>
-            <div className="mt-2 px-7 py-3">
-              <p className="text-sm text-gray-500">Are you sure you want to log out?</p>
-            </div>
-            <div className="items-center px-4 py-3 sm:flex sm:justify-center sm:space-x-4">
+      {showLogoutConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to log out?</p>
+            <div className="modal-actions">
               <button
                 onClick={confirmLogout}
-                className="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 sm:w-auto transform hover:scale-105 transition duration-300"
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >
                 Yes, Logout
               </button>
               <button
                 onClick={cancelLogout}
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:w-auto sm:text-sm transform hover:scale-105 transition duration-300"
+                className="btn btn-secondary"
               >
                 Cancel
               </button>
             </div>
           </div>
         </div>
-      </div>
-    )}
-    </> // Added closing React Fragment
+      )}
+    </>
   );
 };
 

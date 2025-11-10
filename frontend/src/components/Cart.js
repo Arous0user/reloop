@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatCurrency } from '../utils/currency';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, getTotalPriceWithDiscount } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -37,7 +37,7 @@ const Cart = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <ul className="divide-y divide-gray-200">
-              {cartItems.map(({ product, quantity }) => (
+              {cartItems.map(({ product, quantity, warranty }) => (
                 <li key={product.id} className="p-4">
                   <div className="flex">
                     <div className="flex-shrink-0 w-24 h-24 bg-gray-200 rounded-md overflow-hidden">
@@ -59,6 +59,9 @@ const Cart = () => {
                         <div>
                           <h3 className="text-lg font-medium text-gray-900">{product.title}</h3>
                           <p className="text-gray-600">{product.seller?.name || 'Unknown Seller'}</p>
+                          {warranty.cost > 0 && (
+                            <p className="text-sm text-gray-500">Warranty: {warranty.duration}</p>
+                          )}
                         </div>
                         <button 
                           onClick={() => removeFromCart(product.id)}
@@ -82,26 +85,16 @@ const Cart = () => {
                           <button 
                             onClick={() => updateQuantity(product.id, quantity + 1)}
                             className="text-gray-500 hover:text-gray-700 w-8 h-8 flex items-center justify-center border border-gray-300 rounded-r-md transform hover:scale-105 transition duration-300"
+                            disabled={quantity >= product.stock}
                           >
                             +
                           </button>
                         </div>
                         
                         <div className="text-right">
-                          {product.discount > 0 ? (
-                            <div>
-                              <p className="text-lg font-bold text-gray-900">
-                                {formatCurrency(product.price * (1 - product.discount / 100) * quantity)}
-                              </p>
-                              <p className="text-sm text-gray-500 line-through">
-                                {formatCurrency(product.price * quantity)}
-                              </p>
-                            </div>
-                          ) : (
-                            <p className="text-lg font-bold text-gray-900">
-                              {formatCurrency(product.price * quantity)}
-                            </p>
-                          )}
+                          <p className="text-lg font-bold text-gray-900">
+                            {formatCurrency((product.price + warranty.cost) * quantity)}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -114,27 +107,32 @@ const Cart = () => {
         
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Order Summary</h3>
-            
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
             <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="text-gray-900">{formatCurrency(getTotalPriceWithDiscount())}</span>
-              </div>
-              
-              <div className="flex justify-between">
+              {cartItems.map((item) => (
+                <div key={item.product.id}>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">{item.product.title} (x{item.quantity})</span>
+                    <span className="text-gray-900">{formatCurrency(item.product.price * item.quantity)}</span>
+                  </div>
+                  {item.warranty.cost > 0 && (
+                    <div className="flex justify-between text-sm text-gray-500">
+                      <span>Warranty: {item.warranty.duration}</span>
+                      <span>{formatCurrency(item.warranty.cost * item.quantity)}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div className="border-t border-gray-200 pt-4 flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span className="text-gray-900">Free</span>
+                <div>
+                  <span className="text-gray-500 line-through mr-2">{formatCurrency(500)}</span>
+                  <span className="text-green-600 font-bold">Free</span>
+                </div>
               </div>
-              
-              <div className="flex justify-between">
-                <span className="text-gray-600">Tax</span>
-                <span className="text-gray-900">{formatCurrency(0)}</span>
-              </div>
-              
               <div className="border-t border-gray-200 pt-4 flex justify-between">
                 <span className="text-lg font-bold text-gray-900">Total</span>
-                <span className="text-lg font-bold text-gray-900">{formatCurrency(getTotalPriceWithDiscount())}</span>
+                <span className="text-lg font-bold text-gray-900">{formatCurrency(getTotalPrice())}</span>
               </div>
               
               <button

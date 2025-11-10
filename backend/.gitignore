@@ -1,0 +1,17 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+build/
+
+# Prisma generated files and uploads
+prisma/migrations/
+uploads/

@@ -1,192 +1,114 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useProducts } from '../context/ProductContext';
+import axios from 'axios';
 import ProductCard from '../components/ProductCard';
-import { formatCurrency } from '../utils/currency';
+import FilterDropdown from '../components/FilterDropdown';
+import BACKEND_URL from '../config';
 import { categories } from '../utils/categories';
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 const Products = () => {
-  const { products, loading } = useProducts(); // Get loading state
-  const query = useQuery();
-  const navigate = useNavigate(); // Initialize useNavigate
-  const [filter, setFilter] = useState('all');
-  const [sort, setSort] = useState('newest');
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [showFilters, setShowFilters] = useState(false); // New state for filter visibility
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('');
+  const [showFilter, setShowFilter] = useState(false);
+  const [filters, setFilters] = useState({
+    category: 'all',
+    priceRange: { min: 0, max: 100000 },
+  });
 
   useEffect(() => {
-    const category = query.get('category');
-    if (category) {
-      setFilter(category);
-    } else {
-      setFilter('all'); // Reset filter if no category in URL
-    }
-  }, [query]);
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/products`);
+        setProducts(response.data.products);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    };
 
-  const handleCategoryChange = (newCategory) => {
-    setFilter(newCategory);
-    // Update URL query parameter
-    const params = new URLSearchParams(query);
-    if (newCategory === 'all') {
-      params.delete('category');
-    } else {
-      params.set('category', newCategory);
-    }
-    navigate({ search: params.toString() });
+    fetchProducts();
+  }, []);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  // Filter products
-  const filteredProducts = products.filter(product => {
-    // Category filter
-    if (filter !== 'all' && product.category !== filter) {
-      return false;
-    }
-    
-    // Price filter
-    if (product.price < priceRange[0] || product.price > priceRange[1]) {
-      return false;
-    }
-    
-    return true;
-  });
+  const handleSort = (e) => {
+    setSortOrder(e.target.value);
+  };
 
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sort) {
-      case 'price-low':
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const filteredProducts = products
+    .filter(product => {
+      const searchTermLower = searchTerm.toLowerCase();
+      const titleMatch = product.title.toLowerCase().includes(searchTermLower);
+      const tagMatch = product.tags.some(tag => tag.toLowerCase().includes(searchTermLower));
+      return titleMatch || tagMatch;
+    })
+    .filter(product => {
+      if (filters.category === 'all') {
+        return true;
+      }
+      return product.category === filters.category;
+    })
+    .filter(product => {
+      return product.price >= filters.priceRange.min && product.price <= filters.priceRange.max;
+    })
+    .sort((a, b) => {
+      if (sortOrder === 'price-asc') {
         return a.price - b.price;
-      case 'price-high':
+      } else if (sortOrder === 'price-desc') {
         return b.price - a.price;
-      case 'rating':
-        return (b.seller?.rating || 0) - (a.seller?.rating || 0);
-      case 'newest':
-      default:
-        return new Date(b.createdAt) - new Date(a.createdAt);
-    }
-  });
+      } else {
+        return 0;
+      }
+    });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">All Products</h1>
-      
-      <div className="flex flex-col md:flex-row">
-        {/* Filter Toggle Button for small screens */}
-        <div className="md:hidden mb-4">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="w-full bg-primary text-white py-2 px-4 rounded-md font-medium hover:bg-primary-dark flex items-center justify-center transform hover:scale-105 transition duration-300"
-          >
-            {showFilters ? 'Hide Filters' : 'Show Filters'}
-            <i className={`fas fa-chevron-${showFilters ? 'up' : 'down'} ml-2`}></i>
+    <div className="bg-silver min-h-screen py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <input
+            type="text"
+            placeholder="Search products by title or tag..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+            style={{borderRadius: '50px'}}
+          />
+        </div>
+        <div className="flex justify-between items-center mb-8">
+          <button onClick={() => setShowFilter(true)} className="p-2 border border-gray-300 rounded-md" style={{backgroundColor: 'white'}}>
+            Filter
           </button>
+          <select onChange={handleSort} className="p-2 border border-gray-300 rounded-md">
+            <option value="">Sort by</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
         </div>
 
-        {/* Filters Sidebar */}
-        <div className={`w-full md:w-64 mb-6 md:mb-0 md:mr-8 transition-all duration-300 ease-in-out ${showFilters ? 'block' : 'hidden md:block'}`}>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Filters</h2>
-            
-            {/* Category Filter */}
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-2">Category</h3>
-              <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="category"
-                    checked={filter === 'all'}
-                    onChange={() => handleCategoryChange('all')}
-                    className="h-4 w-4 text-primary"
-                  />
-                  <span className="ml-2 text-gray-700">All Categories</span>
-                </label>
-                {categories.map(category => (
-                  <label key={category.name} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="category"
-                      checked={filter === category.name}
-                      onChange={() => handleCategoryChange(category.name)}
-                      className="h-4 w-4 text-primary"
-                    />
-                    <span className="ml-2 text-gray-700">{category.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            
-            {/* Price Filter */}
-            <div className="mb-6">
-              <h3 className="font-medium text-gray-900 mb-2">Price Range</h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">{formatCurrency(priceRange[0])}</span>
-                  <span className="text-gray-600">{formatCurrency(priceRange[1])}</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                  className="w-full"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Products Grid */}
-        <div className="flex-1">
-          {/* Sorting and Results Info */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-            <p className="text-gray-600 mb-2 sm:mb-0">
-              Showing {sortedProducts.length} of {products.length} products
-            </p>
-            
-            <div className="flex items-center">
-              <span className="text-gray-700 mr-2">Sort by:</span>
-              <select
-                value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1 transform hover:scale-105 transition duration-300"
-              >
-                <option value="newest">Newest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
-              </select>
-            </div>
-          </div>
-          
-          {/* Loading Indicator */}
-          {loading && (
-            <div className="text-center py-12">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Products...</h3>
-              <p className="text-gray-600">Please wait while we fetch the products.</p>
-            </div>
-          )}
+        <FilterDropdown 
+          categories={categories}
+          onFilterChange={handleFilterChange}
+          isOpen={showFilter}
+          setIsOpen={setShowFilter}
+        />
 
-          {/* Products Grid */}
-          {!loading && sortedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {sortedProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            !loading && (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-600">Try adjusting your filters to see more products.</p>
-              </div>
-            )
-          )}
-        </div>
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {filteredProducts.map(product => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">No products found</h2>
+            <p className="text-gray-600">Try adjusting your search or filters.</p>
+          </div>
+        )}
       </div>
     </div>
   );
