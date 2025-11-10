@@ -73,16 +73,16 @@ const Footer = () => {
         <div className="footer-section">
           <h3>Make Money with Us</h3>
           <ul>
-            <li><a href="javascript:void(0)" onClick={handleSellClick}>Sell on RE-loop</a></li>
-            <li><a href="javascript:void(0)" onClick={handleBecomeSellerClick}>Become a Seller</a></li>
-            <li><a href="javascript:void(0)" onClick={handleAdvertiseClick}>Advertise Your Products</a></li>
+            <li><button onClick={handleSellClick} className="footer-link-button">Sell on RE-loop</button></li>
+            <li><button onClick={handleBecomeSellerClick} className="footer-link-button">Become a Seller</button></li>
+            <li><button onClick={handleAdvertiseClick} className="footer-link-button">Advertise Your Products</button></li>
           </ul>
         </div>
         <div className="footer-section">
           <h3>Let Us Help You</h3>
           <ul>
-            <li><a href="javascript:void(0)" onClick={handleYourAccountClick}>Your Account</a></li>
-            <li><a href="javascript:void(0)" onClick={handleHelpClick}>Help</a></li>
+            <li><button onClick={handleYourAccountClick} className="footer-link-button">Your Account</button></li>
+            <li><button onClick={handleHelpClick} className="footer-link-button">Help</button></li>
             <li><a href="/terms-and-conditions">Terms & Conditions</a></li>
           </ul>
         </div>

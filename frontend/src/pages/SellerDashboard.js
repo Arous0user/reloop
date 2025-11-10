@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import axios from 'axios';
@@ -17,32 +17,32 @@ const SellerDashboard = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
-  const fetchSellerData = async () => {
+  const fetchSellerData = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/auth/${sellerId}`);
       setSeller(response.data.user);
     } catch (error) {
       console.error('Failed to fetch seller data:', error);
     }
-  };
+  }, [sellerId]);
 
-  const fetchSellerProducts = async () => {
+  const fetchSellerProducts = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/products?sellerId=${sellerId}`);
       setSellerProducts(response.data.products);
     } catch (error) {
       console.error('Failed to fetch seller products:', error);
     }
-  };
+  }, [sellerId]);
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/reviews/user/${sellerId}`);
       setReviews(response.data.reviews);
     } catch (error) {
       console.error('Failed to fetch reviews:', error);
     }
-  };
+  }, [sellerId]);
 
   useEffect(() => {
     if (sellerId) {

@@ -113,7 +113,7 @@ const Login = () => {
               </div>
 
               <div className="text-sm">
-                <a href="javascript:void(0)" className="font-medium text-primary hover:text-primary-dark">
+                <button type="button" className="font-medium text-primary hover:text-primary-dark focus:outline-none focus:underline">
                   Forgot your password?
                 </a>
               </div>
