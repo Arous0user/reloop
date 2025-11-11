@@ -3,6 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+
 const Navigation = () => {
   const { user } = useAuth();
   const { getTotalItems } = useCart();
@@ -92,7 +95,7 @@ const Navigation = () => {
             <div className="flex items-center"> {/* Right side for all screen sizes: Cart, User Profile/Login/Register, Mobile menu button */}
               <div className="flex items-center space-x-4">
                 <Link to="/cart" className={`${getCartLinkClass('/cart')} relative`}>
-                  <i className="fas fa-shopping-cart text-xl"></i>
+                  <FontAwesomeIcon icon={faShoppingCart} className="text-xl" />
                   {getTotalItems() > 0 && (
                     <span className="absolute top-2 right-2 inline-flex items-center justify-center px-1.5 py-0.5 text-[0.65rem] font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-700 rounded-full">
                       {getTotalItems()}
