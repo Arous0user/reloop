@@ -1,2 +1,2 @@
-const BACKEND_URL = 'http://localhost:5002'; // Changed to 5002 to avoid conflicts
+const BACKEND_URL = 'https://reloop-1.onrender.com';
 export default BACKEND_URL;
