@@ -12,6 +12,4 @@ logs/
 # Build artifacts
 build/
 
-# Prisma generated files and uploads
-prisma/migrations/
-uploads/
+# Prisma generated files
