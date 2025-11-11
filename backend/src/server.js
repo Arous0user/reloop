@@ -1,15 +1,49 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
+const path = require('path');
+
+const { PrismaClient } = require('@prisma/client');
+const { createRedisClient } = require('./config/redis');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5001; // Changed to 5001
+const PORT = process.env.PORT || 5002; // Changed to 5002 to avoid conflicts
 
-// Middleware
+// Initialize Prisma client with optimized connection pooling
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
+  log: ['query', 'info', 'warn', 'error'],
+});
+
+// Initialize Redis client
+let redisClient;
+try {
+  redisClient = createRedisClient();
+  if (redisClient) {
+    redisClient.connect().catch(err => {
+      console.warn('Redis connection failed (continuing without caching):', err.message);
+    });
+  } else {
+    console.log('Redis is not configured or disabled');
+  }
+} catch (error) {
+  console.warn('Redis initialization failed (continuing without caching):', error.message);
+}
+
+// Compression middleware
+app.use(compression());
+
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads')); // Serve static uploaded files
+app.use(express.json({ limit: '10mb' })); // Increase payload limit for product data
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use('/uploads', express.static('uploads', { maxAge: '1y' })); // Serve static uploaded files with caching
+app.use(express.static(path.join(__dirname, '..', '..', 'frontend', 'build'), { maxAge: '1y' }));
+
 
 // Routes
 app.get('/', (req, res) => {
@@ -26,6 +60,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
+const walletRoutes = require('./routes/walletRoutes'); // Add wallet routes
 
 // Use routes
 app.use('/api/auth', authRoutes);
@@ -37,8 +72,73 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/wallet', walletRoutes); // Add wallet routes
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Health check endpoint with database and cache status
+app.get('/health/full', async (req, res) => {
+  const healthCheck = {
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    database: 'OK',
+    cache: 'DISABLED'
+  };
+
+  try {
+    // Check database connection
+    await prisma.$queryRaw`SELECT 1`;
+  } catch (error) {
+    healthCheck.database = 'ERROR';
+    healthCheck.status = 'ERROR';
+  }
+
+  // Check cache connection
+  try {
+    if (redisClient && redisClient.isOpen) {
+      await redisClient.ping();
+      healthCheck.cache = 'CONNECTED';
+    } else if (redisClient) {
+      healthCheck.cache = 'NOT_CONNECTED';
+      healthCheck.status = 'WARNING';
+    }
+    // If redisClient is null, cache remains 'DISABLED'
+  } catch (error) {
+    healthCheck.cache = 'ERROR';
+    healthCheck.status = 'ERROR';
+  }
+
+  const statusCode = healthCheck.status === 'OK' ? 200 : 503;
+  res.status(statusCode).json(healthCheck);
+});
+
+// Catch-all route to serve frontend's index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', '..', 'frontend', 'build', 'index.html'));
+});
+
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('Shutting down gracefully...');
+  await prisma.$disconnect();
+  if (redisClient && redisClient.isOpen) {
+    await redisClient.quit();
+  }
+  process.exit(0);
+});
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`Full health check: http://localhost:${PORT}/health/full`);
 });

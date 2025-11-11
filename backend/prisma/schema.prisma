@@ -23,6 +23,10 @@ model User {
   buyerRating     Float?
   emailVerified   Boolean        @default(true) // Set to true by default
   wishlist        Wishlist[] // Added wishlist relation
+  walletBalance   Float          @default(0) // Added wallet balance field
+  referralCode    String?        @unique
+
+  @@index([createdAt])
 }
 
 model Product {
@@ -33,14 +37,21 @@ model Product {
   slug        String   @unique
   description String
   priceCents  Int
-  discount    Int?     @default(0)
+  stock       Int      @default(0)
+  soldOut     Boolean  @default(false)
+
   category    String
-  stock       Int
   tags        String[]
   images      Image[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   wishlist    Wishlist[] // Added wishlist relation
+
+  @@index([category])
+  @@index([priceCents])
+  @@index([createdAt])
+  @@index([sellerId])
+  // @@fulltext([title, description])
 }
 
 model Image {
@@ -48,6 +59,8 @@ model Image {
   url       String
   product   Product @relation(fields: [productId], references: [id])
   productId String
+
+  @@index([productId])
 }
 
 model Order {
@@ -59,6 +72,10 @@ model Order {
   currency   String   @default("INR")
   status     String   @default("CREATED")
   createdAt  DateTime @default(now())
+  referredBy String?
+
+  @@index([buyerId])
+  @@index([createdAt])
 }
 
 model ClientReview {
@@ -70,6 +87,10 @@ model ClientReview {
   reviewee    User     @relation("reviewsReceived", fields: [revieweeId], references: [id])
   revieweeId  String
   createdAt   DateTime @default(now())
+
+  @@index([reviewerId])
+  @@index([revieweeId])
+  @@index([createdAt])
 }
 
 model Wishlist {
@@ -81,4 +102,6 @@ model Wishlist {
   createdAt DateTime @default(now())
 
   @@unique([userId, productId]) // A user can only add a product to their wishlist once
+  @@index([userId])
+  @@index([productId])
 }

@@ -6,6 +6,20 @@ const crypto = require('crypto');
 
 const prisma = new PrismaClient();
 
+// Generate a unique referral code
+const generateReferralCode = async () => {
+  let code;
+  let isUnique = false;
+  while (!isUnique) {
+    code = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const existingUser = await prisma.user.findFirst({ where: { referralCode: code } });
+    if (!existingUser) {
+      isUnique = true;
+    }
+  }
+  return code;
+};
+
 // Generate JWT tokens
 const generateTokens = (userId, role) => {
   const accessToken = jwt.sign(
@@ -40,6 +54,9 @@ const register = async (req, res) => {
     // Hash password
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Generate referral code
+    const referralCode = await generateReferralCode();
     
     // Create user
     const user = await prisma.user.create({
@@ -50,6 +67,7 @@ const register = async (req, res) => {
         isSeller: isSeller || false,
         role: isSeller ? 'seller' : 'buyer',
         emailVerified: true, // Temporarily set to true
+        referralCode,
       }
     });
     
@@ -131,7 +149,9 @@ const getProfile = async (req, res) => {
         email: true,
         isSeller: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        sellerRating: true,
+        referralCode: true,
       }
     });
     
@@ -246,6 +266,22 @@ const refreshToken = async (req, res) => {
   }
 };
 
+// Validate referral code
+const validateReferral = async (req, res) => {
+  try {
+    const { referralCode } = req.body;
+    const user = await prisma.user.findFirst({ where: { referralCode } });
+    if (user) {
+      res.json({ success: true });
+    } else {
+      res.json({ success: false });
+    }
+  } catch (error) {
+    console.error('Validate referral error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -253,5 +289,6 @@ module.exports = {
   updateProfile,
   getUserProfileById,
   refreshToken,
-  verifyEmail
+  verifyEmail,
+  validateReferral,
 };

@@ -9,6 +9,18 @@ const createClientReview = async (req, res) => {
     const { rating, comment } = req.body;
     const reviewerId = req.user.userId;
 
+    // Check if a review already exists
+    const existingReview = await prisma.clientReview.findFirst({
+      where: {
+        reviewerId,
+        revieweeId,
+      },
+    });
+
+    if (existingReview) {
+      return res.status(400).json({ message: 'You have already reviewed this user.' });
+    }
+
     const review = await prisma.clientReview.create({
       data: {
         rating: parseInt(rating),
@@ -39,10 +51,12 @@ const createClientReview = async (req, res) => {
       },
     });
 
+    const newRating = avgRating._avg.rating;
+
     await prisma.user.update({
       where: { id: revieweeId },
       data: {
-        [ratingType]: avgRating._avg.rating,
+        [ratingType]: newRating,
       },
     });
 

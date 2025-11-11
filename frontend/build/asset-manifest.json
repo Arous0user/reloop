@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.a424f272.css",
-    "main.js": "/static/js/main.fbf3baad.js",
+    "main.css": "/static/css/main.3b0791c7.css",
+    "main.js": "/static/js/main.5a2376e2.js",
+    "static/media/laptops.jpg": "/static/media/laptops.47b07cc4f37b26575aac.jpg",
     "index.html": "/index.html",
-    "main.a424f272.css.map": "/static/css/main.a424f272.css.map",
-    "main.fbf3baad.js.map": "/static/js/main.fbf3baad.js.map"
+    "main.3b0791c7.css.map": "/static/css/main.3b0791c7.css.map",
+    "main.5a2376e2.js.map": "/static/js/main.5a2376e2.js.map"
   },
   "entrypoints": [
-    "static/css/main.a424f272.css",
-    "static/js/main.fbf3baad.js"
+    "static/css/main.3b0791c7.css",
+    "static/js/main.5a2376e2.js"
   ]
 }

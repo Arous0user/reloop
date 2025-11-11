@@ -1,6 +1,12 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Razorpay = require('razorpay');
 
-// Create payment intent
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+// Create payment intent (Stripe)
 const createPaymentIntent = async (req, res) => {
   try {
     const { amount, currency = 'INR', items } = req.body;
@@ -23,7 +29,27 @@ const createPaymentIntent = async (req, res) => {
   }
 };
 
-// Webhook to handle payment events
+// Create Razorpay order
+const createRazorpayOrder = async (req, res) => {
+  try {
+    const { amount, currency = 'INR' } = req.body;
+
+    const options = {
+      amount: amount, // amount is already in smallest currency unit (e.g., paise for INR)
+      currency,
+      receipt: `receipt_order_${Date.now()}`,
+      payment_capture: 1 // auto-capture payment
+    };
+
+    const order = await razorpay.orders.create(options);
+    res.json(order);
+  } catch (error) {
+    console.error('Razorpay order creation error:', error);
+    res.status(500).json({ message: 'Failed to create Razorpay order' });
+  }
+};
+
+// Webhook to handle payment events (Stripe)
 const handleWebhook = async (req, res) => {
   try {
     const sig = req.headers['stripe-signature'];
@@ -63,5 +89,6 @@ const handleWebhook = async (req, res) => {
 
 module.exports = {
   createPaymentIntent,
+  createRazorpayOrder,
   handleWebhook
 };

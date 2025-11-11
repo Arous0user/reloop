@@ -1,6 +1,6 @@
 # Deployment Guide
 
-This guide explains how to deploy the MarketPlace e-commerce platform to production.
+This guide explains how to deploy the MarketPlace e-commerce platform to production with scalability for 200,000 products and 5,000 concurrent listings.
 
 ## 🚀 Deployment Architecture
 
@@ -13,6 +13,8 @@ Frontend (Vercel/Netlify) ←→ Backend (Render/Railway) ←→ Database (Supab
                             Payment Processing (Stripe/Razorpay)
                                    |
                             AI Services (Gemini API)
+                                   |
+                            Caching (Redis)
 ```
 
 ## 🌐 Frontend Deployment
@@ -42,6 +44,8 @@ Frontend (Vercel/Netlify) ←→ Backend (Render/Railway) ←→ Database (Supab
    - AWS_SECRET_ACCESS_KEY
    - STRIPE_SECRET_KEY
    - GEMINI_API_KEY
+   - REDIS_HOST
+   - REDIS_PORT
 5. Set build command: `npm install`
 6. Set start command: `npm start`
 
@@ -110,6 +114,24 @@ Frontend (Vercel/Netlify) ←→ Backend (Render/Railway) ←→ Database (Supab
 2. Set environment variable:
    - GEMINI_API_KEY
 
+## 🗃 Caching with Redis
+
+### Upstash Redis (Recommended)
+1. Create an account at [upstash.com](https://upstash.com)
+2. Create a new Redis database
+3. Get the connection details
+4. Set environment variables:
+   - REDIS_HOST
+   - REDIS_PORT
+   - REDIS_PASSWORD (if applicable)
+
+### Self-hosted Redis
+1. Deploy Redis on your infrastructure
+2. Set environment variables:
+   - REDIS_HOST
+   - REDIS_PORT
+   - REDIS_PASSWORD (if applicable)
+
 ## 🛡 Environment Variables
 
 Create a `.env.production` file in your backend with:
@@ -137,9 +159,17 @@ STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 # Gemini AI
 GEMINI_API_KEY=your_gemini_api_key
 
+# Redis for caching
+REDIS_HOST=your_redis_host
+REDIS_PORT=your_redis_port
+# REDIS_PASSWORD=your_redis_password_if_any
+
 # Server
 PORT=8080
 NODE_ENV=production
+
+# Performance settings
+PRISMA_CLIENT_ENGINE_TYPE=dataproxy
 ```
 
 ## 🔧 Post-Deployment Steps
@@ -152,6 +182,7 @@ NODE_ENV=production
 6. Set up monitoring and error tracking (e.g., Sentry)
 7. Configure custom domain and SSL certificates
 8. Set up CI/CD pipelines for automatic deployments
+9. Run load tests to verify scalability
 
 ## 🔄 CI/CD Setup
 
@@ -196,6 +227,12 @@ jobs:
    - Mixpanel or Amplitude for user behavior
    - Custom dashboards for sales and revenue
 
+3. Monitor scalability metrics:
+   - Response times under load
+   - Database query performance
+   - Cache hit rates
+   - Memory and CPU usage
+
 ## 🔒 Security Considerations
 
 1. Use HTTPS for all communications
@@ -207,6 +244,19 @@ jobs:
 7. Store secrets securely
 8. Implement proper authentication and authorization
 9. Regular security audits
+10. DDoS protection for handling traffic spikes
+
+## 📈 Scaling Considerations
+
+For handling 200,000 products and 5,000 concurrent listings:
+
+1. **Database**: Use a managed PostgreSQL service with at least 4GB RAM
+2. **Caching**: Implement Redis for caching product data
+3. **Load Balancing**: Use a load balancer for distributing traffic
+4. **CDN**: Use a CDN for static assets and images
+5. **Auto-scaling**: Configure auto-scaling based on CPU/memory usage
+6. **Connection Pooling**: Configure database connection pooling
+7. **Monitoring**: Implement comprehensive monitoring
 
 ## 🆘 Troubleshooting
 
@@ -232,9 +282,20 @@ jobs:
    - Check API quota limits
    - Ensure proper prompt formatting
 
+5. **Caching Issues**
+   - Verify Redis connection details
+   - Check Redis memory usage
+   - Monitor cache hit/miss ratios
+
+6. **Performance Issues**
+   - Check database query performance
+   - Monitor cache effectiveness
+   - Review rate limiting settings
+
 ### Support
 
 For issues not covered in this guide:
 1. Check the project's GitHub issues
 2. Contact the development team
 3. Refer to the documentation of individual services (AWS, Stripe, etc.)
+4. Review the [SCALING.md](file:///C:/Users/flyin/Desktop/WEBSITE/SCALING.md) documentation for performance optimization details
