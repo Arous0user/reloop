@@ -12,7 +12,7 @@ const Home = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/products`);
-        setProducts(response.data.products);
+        setProducts(response.data.products || []);
       } catch (error) {
         console.error('Failed to fetch products:', error);
       }
