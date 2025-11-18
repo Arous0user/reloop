@@ -84,6 +84,7 @@ const Footer = () => {
             <li><button onClick={handleYourAccountClick} className="footer-link-button">Your Account</button></li>
             <li><button onClick={handleHelpClick} className="footer-link-button">Help</button></li>
             <li><a href="/terms-and-conditions">Terms & Conditions</a></li>
+            <li><a href="/privacy-policy">Privacy Policy</a></li>
           </ul>
         </div>
 

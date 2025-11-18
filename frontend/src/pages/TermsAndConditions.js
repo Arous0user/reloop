@@ -4,84 +4,96 @@ const TermsAndConditions = () => {
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-3xl font-bold mb-6">Terms and Conditions</h1>
+      <p className="mb-4">Last updated: November 18, 2025</p>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">1. Shipping Policy</h2>
+        <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
+        <p className="mb-2">
+          Welcome to RE-loop. These Terms and Conditions govern your use of our website and services. By accessing or using our service, you agree to be bound by these terms.
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">2. About Us</h2>
+        <p className="mb-2">
+          RE-loop is a registered business in India, providing a marketplace for pre-owned electronics. Our platform connects buyers and sellers, promoting sustainability and accessibility in technology.
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">3. User Responsibilities</h2>
+        <p className="mb-2">
+          You agree to provide accurate and complete information when creating an account and making transactions. You are responsible for maintaining the confidentiality of your account and password.
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">4. Shipping Policy</h2>
         <p className="mb-2">
           All orders are processed within 1-2 business days. Shipping times vary based on your location and the shipping method selected at checkout.
-          Standard shipping typically takes 5-7 business days, while expedited shipping options are available for faster delivery.
-          We partner with reliable carriers to ensure your products arrive safely and on time.
-          You will receive a tracking number via email once your order has been dispatched.
-        </p>
-        <p className="mb-2">
-          Please note that delivery times are estimates and may be subject to delays due to unforeseen circumstances (e.g., weather, customs, carrier issues).
-          We are not responsible for delays caused by the shipping carrier.
+          Standard shipping typically takes 5-7 business days. You will receive a tracking number via email once your order has been dispatched.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">2. Refund and Replacement Policy</h2>
-        <h3 className="text-xl font-medium mb-2">2.1. Eligibility for Refund/Replacement</h3>
+        <h2 className="text-2xl font-semibold mb-4">5. Refund and Replacement Policy</h2>
+        <h3 className="text-xl font-medium mb-2">5.1. Eligibility</h3>
         <p className="mb-2">
-          We offer refunds or replacements for products that are defective, damaged during shipping, or if you receive the wrong item.
-          To be eligible, you must notify us within 7 days of receiving your order.
-          The item must be unused, in its original packaging, and accompanied by proof of purchase.
+          We offer refunds or replacements for products that are defective, damaged, or if you receive the wrong item. You must notify us within 7 days of receiving your order. The item must be unused and in its original packaging.
         </p>
+        <h3 className="text-xl font-medium mb-2">5.2. Process</h3>
         <p className="mb-2">
-          Products that are not defective or damaged but you wish to return for other reasons (e.g., change of mind) may be subject to a restocking fee and return shipping costs.
-          Such returns must also be initiated within 7 days of receipt and meet the same conditions as above.
+          To initiate a refund or replacement, contact us at support@reloop.com with your order number and a description of the issue.
         </p>
-
-        <h3 className="text-xl font-medium mb-2">2.2. Non-Eligible Items</h3>
+        <h3 className="text-xl font-medium mb-2">5.3. Refund Time</h3>
         <p className="mb-2">
-          Certain items are exempt from being returned, such as:
-          <ul className="list-disc list-inside ml-4">
-            <li>Digital products</li>
-            <li>Gift cards</li>
-            <li>Items not in their original condition, damaged or missing parts for reasons not due to our error</li>
-            <li>Items returned more than 7 days after delivery</li>
-          </ul>
-        </p>
-
-        <h3 className="text-xl font-medium mb-2">2.3. How to Initiate a Refund/Replacement</h3>
-        <p className="mb-2">
-          To request a refund or replacement, please contact our customer service team at support@reloop.com with your order number and a detailed description of the issue,
-          including photos if the item is damaged or defective. Our team will guide you through the process.
+          Approved refunds will be processed within 5-10 business days to your original method of payment.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">3. Refund Time</h2>
+        <h2 className="text-2xl font-semibold mb-4">6. Payment Gateways</h2>
         <p className="mb-2">
-          Once your return is received and inspected, we will send you an email to notify you that we have received your returned item.
-          We will also notify you of the approval or rejection of your refund.
-        </p>
-        <p className="mb-2">
-          If approved, your refund will be processed, and a credit will automatically be applied to your original method of payment,
-          within 5-10 business days. Please note that it may take some additional time for your bank or credit card company to post the refund to your account.
-        </p>
-        <p className="mb-2">
-          If you haven’t received a refund yet, first check your bank account again.
-          Then contact your credit card company, it may take some time before your refund is officially posted.
-          Next contact your bank. There is often some processing time before a refund is posted.
-          If you’ve done all of this and you still have not received your refund yet, please contact us at support@reloop.com.
+          We use third-party payment gateways, including PhonePe, to process transactions. We are not responsible for the performance or security of these gateways. Your use of these services is subject to their terms and conditions.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">4. Replacements</h2>
+        <h2 className="text-2xl font-semibold mb-4">7. Intellectual Property</h2>
         <p className="mb-2">
-          We only replace items if they are defective or damaged. If you need to exchange it for the same item,
-          send us an email at support@reloop.com and send your item to: [Your Return Address Here].
+          All content on this website, including text, graphics, logos, and images, is the property of RE-loop and is protected by copyright laws.
         </p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">5. Changes to Terms and Conditions</h2>
+        <h2 className="text-2xl font-semibold mb-4">8. Limitation of Liability</h2>
         <p className="mb-2">
-          We reserve the right to update, change or replace any part of these Terms and Conditions by posting updates and/or changes to our website.
-          It is your responsibility to check this page periodically for changes. Your continued use of or access to the website following the posting of any changes
-          constitutes acceptance of those changes.
+          RE-loop is not liable for any indirect, incidental, or consequential damages arising from your use of our services.
+        </p>
+      </section>
+      
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">9. Governing Law</h2>
+        <p className="mb-2">
+          These Terms and Conditions are governed by the laws of India.
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">10. Changes to Terms and Conditions</h2>
+        <p className="mb-2">
+          We reserve the right to update these Terms and Conditions at any time. Your continued use of the website following any changes constitutes acceptance of those changes.
+        </p>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">11. Contact Information</h2>
+        <p>
+          If you have any questions about these Terms and Conditions, please contact us at:
+          <br />
+          Email: support@reloop.com
+          <br />
+          Address: [Your Business Address Here]
         </p>
       </section>
     </div>

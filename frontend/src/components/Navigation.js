@@ -84,6 +84,9 @@ const Navigation = () => {
                 <Link to="/products" className={getLinkClass('/products')}>
                   Products
                 </Link>
+                <Link to="/privacy-policy" className={getLinkClass('/privacy-policy')}>
+                  Privacy Policy
+                </Link>
                 {user && user.isSeller && (
                   <Link to="/sell" className={getLinkClass('/sell')}>
                     Sell
@@ -154,6 +157,9 @@ const Navigation = () => {
             </Link>
             <Link to="/products" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
               Products
+            </Link>
+            <Link to="/privacy-policy" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+              Privacy Policy
             </Link>
             {user && user.isSeller && (
               <Link to="/sell" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Sell</Link>

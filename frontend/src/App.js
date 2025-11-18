@@ -17,6 +17,7 @@ import SellerDashboard from './pages/SellerDashboard';
 import Help from './pages/Help';
 import About from './pages/About';
 import TermsAndConditions from './pages/TermsAndConditions'; // Import TermsAndConditions
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import Footer from './components/Footer';
 import Notification from './components/Notification'; // Import Notification
 
@@ -44,6 +45,7 @@ function App() {
                   <Route path="/help" element={<Help />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 </Routes>
               </main>
               <Footer />
