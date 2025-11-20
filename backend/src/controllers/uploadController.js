@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, 'C:\\Users\\flyin\\Desktop\\WEBSITE\\backend\\uploads'); // Absolute path for uploads
+      cb(null, 'uploads/'); // Use relative path for uploads
     },
     filename: function (req, file, cb) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
