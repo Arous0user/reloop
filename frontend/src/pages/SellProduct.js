@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { categories } from '../utils/categories';
 import { useProducts } from '../context/ProductContext';
-import axios from 'axios';
+import api from '../api'; // Use the centralized api instance
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import BACKEND_URL from '../config';
 
 const SellProduct = () => {
   const { refreshProducts } = useProducts();
@@ -62,7 +61,7 @@ const SellProduct = () => {
 
     try {
       const token = localStorage.getItem('token'); 
-      await axios.post(`${BACKEND_URL}/api/products`, formData, {
+      await api.post('/api/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`
@@ -215,7 +214,7 @@ const SellProduct = () => {
             <button
               type="button"
               onClick={() => navigate('/products')}
-              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:w-auto sm:text-sm transform hover:scale-105 transition duration-300"
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:w-auto sm:text-sm transform hover:scale-105 transition duration-300"
             >
               Cancel
             </button>
