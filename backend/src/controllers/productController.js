@@ -237,7 +237,7 @@ const createProduct = async (req, res) => {
     }
     
     const { title, description, priceCents, category, tags, stock } = req.body;
-    const imageUrls = req.files && req.files.images ? req.files.images.map(file => ({ url: `/uploads/${file.filename}` })) : [];
+    const imageUrls = req.files && req.files.images ? req.files.images.map(file => ({ url: file.location })) : [];
 
     const parsedPrice = parseInt(priceCents);
     if (isNaN(parsedPrice)) {
