@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // Use the centralized api instance
 import { useAuth } from '../context/AuthContext';
 
 const Wallet = () => {
@@ -10,7 +10,7 @@ const Wallet = () => {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const res = await axios.get(`/api/wallet/${user.id}`);
+        const res = await api.get(`/api/wallet/${user.id}`);
         setWallet(res.data);
         setLoading(false);
       } catch (err) {

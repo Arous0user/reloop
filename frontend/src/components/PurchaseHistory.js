@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import BACKEND_URL from '../config';
+import api from '../api'; // Use the centralized api instance
 
 const PurchaseHistory = ({ userId }) => {
   const [orders, setOrders] = useState([]);
@@ -10,7 +9,7 @@ const PurchaseHistory = ({ userId }) => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/orders/user/${userId}`, {
+        const response = await api.get(`/api/orders/user/${userId}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -50,7 +49,7 @@ const PurchaseHistory = ({ userId }) => {
               <ul className="mt-4 space-y-2">
                 {order.items.map((item) => (
                   <li key={item.id} className="flex items-center">
-                    <img src={`${BACKEND_URL}${item.images[0].url}`} alt={item.title} className="w-16 h-16 object-cover rounded-md mr-4" />
+                    <img src={item.images[0].url} alt={item.title} className="w-16 h-16 object-cover rounded-md mr-4" />
                     <div>
                       <p className="font-medium">{item.title}</p>
                       <p className="text-gray-600">Quantity: {item.quantity}</p>

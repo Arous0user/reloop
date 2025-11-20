@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import axios from 'axios';
-import BACKEND_URL from '../config';
+import api from '../api'; // Use the centralized api instance
 import { useAuth } from '../context/AuthContext';
 import PurchaseHistory from '../components/PurchaseHistory';
 import './UserProfile.css';
@@ -70,7 +69,7 @@ const UserProfile = () => {
         },
       };
 
-      await axios.put(`${BACKEND_URL}/api/auth/profile`, updatedUser, {
+      await api.put('/api/auth/profile', updatedUser, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -99,7 +98,7 @@ const UserProfile = () => {
 
   const handleBecomeSeller = async () => {
     try {
-      await axios.put(`${BACKEND_URL}/api/auth/become-seller`, {}, {
+      await api.put('/api/auth/become-seller', {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -115,7 +114,7 @@ const UserProfile = () => {
   const calculateWalletBalance = async (userId) => {
     try {
       // Get wallet balance from the new API endpoint
-      const response = await axios.get(`${BACKEND_URL}/api/wallet/${userId}`);
+      const response = await api.get(`/api/wallet/${userId}`);
       setWalletBalance(response.data.balance);
     } catch (error) {
       console.error('Failed to calculate wallet balance:', error);
@@ -125,7 +124,7 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/auth/${userId}`);
+        const response = await api.get(`/api/auth/${userId}`);
         const { user } = response.data;
         setUser(user);
       } catch (error) {

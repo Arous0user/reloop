@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import BACKEND_URL from '../config';
+import api from '../api'; // Use the centralized api instance
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const ReviewModal = ({ targetUserId, onClose, onReviewSubmitted }) => {
@@ -31,7 +30,7 @@ const ReviewModal = ({ targetUserId, onClose, onReviewSubmitted }) => {
     console.log('Auth Token:', authToken); // Debugging line
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/reviews/user/${targetUserId}`, {
+      const response = await api.post(`/api/reviews/user/${targetUserId}`, {
         rating,
         comment: reviewText,
       }, {

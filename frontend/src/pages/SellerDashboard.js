@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
-import axios from 'axios';
-import BACKEND_URL from '../config';
+import api from '../api'; // Use the centralized api instance
 import { useAuth } from '../context/AuthContext';
 import ReviewModal from '../components/ReviewModal';
 
@@ -19,7 +18,7 @@ const SellerDashboard = () => {
 
   const fetchSellerData = useCallback(async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/auth/${sellerId}`);
+      const response = await api.get(`/api/auth/${sellerId}`);
       setSeller(response.data.user);
     } catch (error) {
       console.error('Failed to fetch seller data:', error);
@@ -28,7 +27,7 @@ const SellerDashboard = () => {
 
   const fetchSellerProducts = useCallback(async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/products?sellerId=${sellerId}`);
+      const response = await api.get(`/api/products?sellerId=${sellerId}`);
       setSellerProducts(response.data.products);
     } catch (error) {
       console.error('Failed to fetch seller products:', error);
@@ -37,7 +36,7 @@ const SellerDashboard = () => {
 
   const fetchReviews = useCallback(async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/reviews/user/${sellerId}`);
+      const response = await api.get(`/api/reviews/user/${sellerId}`);
       setReviews(response.data.reviews);
     } catch (error) {
       console.error('Failed to fetch reviews:', error);
@@ -66,7 +65,7 @@ const SellerDashboard = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${BACKEND_URL}/api/products/${productToDelete}`, {
+      await api.delete(`/api/products/${productToDelete}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

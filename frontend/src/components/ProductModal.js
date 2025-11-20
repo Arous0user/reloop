@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { categories } from '../utils/categories';
 import { useProducts } from '../context/ProductContext'; // Import useProducts
-import axios from 'axios'; // Import axios for API call
+import api from '../api'; // Use the centralized api instance
 
 const ProductModal = ({ isOpen, onClose }) => {
   const { refreshProducts } = useProducts(); // Get refreshProducts from context
@@ -50,7 +50,7 @@ const ProductModal = ({ isOpen, onClose }) => {
     try {
       // Assuming you have an authentication token
       const token = localStorage.getItem('token'); 
-      await axios.post(`${BACKEND_URL}/api/products`, formData, {
+      await api.post('/api/products', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`

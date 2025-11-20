@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import BACKEND_URL from '../../config';
+import api from '../../api'; // Use the centralized api instance
 
 const WithdrawalRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -8,7 +7,7 @@ const WithdrawalRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get(`${BACKEND_URL}/api/admin/withdrawals`);
+      const res = await api.get('/api/admin/withdrawals');
       setRequests(res.data);
       setLoading(false);
     } catch (err) {
@@ -22,7 +21,7 @@ const WithdrawalRequests = () => {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(`${BACKEND_URL}/api/admin/withdrawals/${id}`, { status });
+      await api.put(`/api/admin/withdrawals/${id}`, { status });
       fetchRequests();
     } catch (err) {
       console.error(err);

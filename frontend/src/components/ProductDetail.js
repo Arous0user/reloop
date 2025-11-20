@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api'; // Use the centralized api instance
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../utils/currency';
-import BACKEND_URL from '../config';
 
 const ProductDetail = () => {
   const { slug } = useParams();
@@ -17,7 +16,7 @@ const ProductDetail = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/products/${slug}`);
+        const response = await api.get(`/api/products/${slug}`);
         setProduct(response.data.product);
         setTotalPrice(response.data.product.price);
       } catch (error) {
@@ -61,7 +60,7 @@ const ProductDetail = () => {
           <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4 h-96 flex items-center justify-center"> {/* Added h-96 and flex properties */}
             {product.images && product.images.length > 0 ? (
               <img 
-                src={`${BACKEND_URL}${product.images[selectedImage].url}`} // Prepend backend URL
+                src={product.images[selectedImage].url} // Use absolute URL from backend
                 alt={product.title} 
                 className="max-h-full max-w-full object-contain" // Adjusted image classes
               />
@@ -81,7 +80,7 @@ const ProductDetail = () => {
                   className={`w-24 h-24 bg-white rounded-lg shadow-md overflow-hidden ${selectedImage === index ? 'ring-2 ring-primary' : ''} transform hover:scale-105 transition duration-300`}
                 >
                   <img 
-                    src={`${BACKEND_URL}${image.url}`} // Prepend backend URL
+                    src={image.url} // Use absolute URL from backend
                     alt={`Product ${index + 1}`} 
                     className="w-full h-full object-cover"
                   />

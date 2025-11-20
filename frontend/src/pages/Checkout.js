@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../utils/currency';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-import BACKEND_URL from '../config';
+import api from '../api'; // Use the centralized api instance
 import { useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
@@ -21,7 +20,7 @@ const Checkout = () => {
     }
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/validate-referral`, { referralCode });
+      const response = await api.post('/api/auth/validate-referral', { referralCode });
       if (response.data.success) {
         // Apply 7-day warranty to all items in the cart
         cartItems.forEach(item => {
@@ -43,8 +42,8 @@ const Checkout = () => {
 
   const handlePayment = async () => {
     try {
-      const orderResponse = await axios.post(
-        `${BACKEND_URL}/api/payments/razorpay/orders`,
+      const orderResponse = await api.post(
+        '/api/payments/razorpay/orders',
         {
           amount: Math.round(totalPrice * 100),
           currency: 'INR',
@@ -74,8 +73,8 @@ const Checkout = () => {
           try {
             // Then, create the order
             console.log('Attempting to create order...');
-            await axios.post(
-              `${BACKEND_URL}/api/orders`,
+            await api.post(
+              '/api/orders',
               {
                 items: JSON.stringify(cartItems.map(item => ({
                   productId: item.product.id,
