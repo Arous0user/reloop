@@ -239,9 +239,6 @@ const createProduct = async (req, res) => {
     const { title, description, priceCents, category, tags, stock } = req.body;
     const imageUrls = req.files && req.files.images ? req.files.images.map(file => ({ url: file.location })) : [];
 
-    console.log('Uploaded files:', req.files);
-    console.log('Image URLs:', imageUrls);
-
     const parsedPrice = parseInt(priceCents);
     if (isNaN(parsedPrice)) {
       return res.status(400).json({ message: 'Invalid price' });
