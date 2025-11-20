@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }) => {
   // Register function
   const register = async (name, email, password, isSeller = false) => {
     try {
+      console.log('BACKEND_URL:', BACKEND_URL);
       const response = await axios.post(`${BACKEND_URL}/api/auth/register`, { name, email, password, isSeller });
       const { user, accessToken, refreshToken } = response.data; // Extract user and tokens
       
