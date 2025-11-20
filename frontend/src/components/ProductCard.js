@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../utils/currency';
 import { Link } from 'react-router-dom';
-import BACKEND_URL from '../config';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
@@ -34,7 +33,7 @@ const ProductCard = ({ product }) => {
             </div>
           ) : product.images && product.images.length > 0 ? (
             <img 
-              src={`${BACKEND_URL}${product.images[0].url}`}
+              src={product.images[0].url}
               alt={product.title} 
               className={`w-full h-full object-cover transform hover:scale-105 transition-transform duration-300 ${imageLoaded ? 'block' : 'hidden'}`}
               onLoad={handleImageLoad}
