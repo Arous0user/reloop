@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'; // Use the centralized api instance
 import ProductCard from '../components/ProductCard';
-import BACKEND_URL from '../config';
-
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -11,7 +9,7 @@ const Home = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/products`);
+        const response = await api.get('/api/products');
         setProducts(response.data.products || []);
       } catch (error) {
         console.error('Failed to fetch products:', error);

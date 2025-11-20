@@ -1,11 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
-import BACKEND_URL from '../config';
-
-// Create an Axios instance with the base URL
-const api = axios.create({
-  baseURL: BACKEND_URL,
-});
+import api from '../api'; // Use the centralized api instance
 
 // Create the context
 const AuthContext = createContext();

@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import BACKEND_URL from '../config';
+import api from '../api'; // Use the centralized api instance
 
 // Create the context
 const ProductContext = createContext();
@@ -25,7 +24,7 @@ export const ProductProvider = ({ children }) => {
   const fetchProducts = useCallback(async (params = {}) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${BACKEND_URL}/api/products`, {
+      const response = await api.get('/api/products', {
         params: {
           page: params.page || 1,
           limit: params.limit || 24,
@@ -80,7 +79,7 @@ export const ProductProvider = ({ children }) => {
   // Get recommended products using AI
   const getRecommendedProducts = async (query) => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/ai/recommendations`, { query });
+      const response = await api.post('/api/ai/recommendations', { query });
       return response.data.recommendations;
     } catch (error) {
       console.error('Failed to get AI recommendations:', error);
