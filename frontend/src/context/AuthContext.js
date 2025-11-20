@@ -2,6 +2,11 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import BACKEND_URL from '../config';
 
+// Create an Axios instance with the base URL
+const api = axios.create({
+  baseURL: BACKEND_URL,
+});
+
 // Create the context
 const AuthContext = createContext();
 
@@ -20,7 +25,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         // Validate token with backend and fetch user data
-        const response = await axios.get(`${BACKEND_URL}/api/auth/profile`, {
+        const response = await api.get('/api/auth/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -43,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (email, password) => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/login`, { email, password });
+      const response = await api.post('/api/auth/login', { email, password });
       const { user, accessToken, refreshToken } = response.data;
       
       setUser(user);
@@ -60,8 +65,7 @@ export const AuthProvider = ({ children }) => {
   // Register function
   const register = async (name, email, password, isSeller = false) => {
     try {
-      console.log('BACKEND_URL:', BACKEND_URL);
-      const response = await axios.post(`${BACKEND_URL}/api/auth/register`, { name, email, password, isSeller });
+      const response = await api.post('/api/auth/register', { name, email, password, isSeller });
       const { user, accessToken, refreshToken } = response.data; // Extract user and tokens
       
       setUser(user); // Set user in state
