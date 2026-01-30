@@ -18,6 +18,7 @@ import Help from './pages/Help';
 import About from './pages/About';
 import TermsAndConditions from './pages/TermsAndConditions'; // Import TermsAndConditions
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import VerifyEmail from './pages/VerifyEmail';
 import Footer from './components/Footer';
 import Notification from './components/Notification'; // Import Notification
 
@@ -37,6 +38,7 @@ function App() {
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/user/:userId" element={<UserProfile />} />
                   <Route path="/sell" element={<SellProduct />} />
@@ -49,8 +51,8 @@ function App() {
                 </Routes>
               </main>
               <Footer />
-              <CartNotification /> {/* Render CartNotification component */}
             </div>
+            <CartNotification />
           </Router>
         </CartProvider>
       </ProductProvider>
