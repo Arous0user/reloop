@@ -63,6 +63,9 @@ const Navigation = () => {
         {(user.role === 'seller' || user.role === 'admin') && (
           <Link to={user.role === 'admin' ? '/admin' : `/seller/${user.id}`} onClick={() => setIsDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Dashboard</Link>
         )}
+        {user.role === 'seller' && (
+          <Link to="/sell" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Sell</Link>
+        )}
         <Link to={`/user/${user.id}`} onClick={() => setIsDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Profile</Link>
       </div>
     </div>
@@ -84,7 +87,7 @@ const Navigation = () => {
                 <Link to="/products" className={getLinkClass('/products')}>
                   Products
                 </Link>
-                {user && user.isSeller && (
+                {user && user.role === 'seller' && (
                   <Link to="/sell" className={getLinkClass('/sell')}>
                     Sell
                   </Link>
@@ -106,7 +109,7 @@ const Navigation = () => {
                   <div className="relative" ref={dropdownRef}>
                     <div className="flex items-center space-x-3">
                       <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold text-gray-500" onClick={toggleDropdown}>
-                        {user.name.charAt(0)}
+                        {user && user.name ? user.name.charAt(0) : '?'}
                       </div>
                     </div>
                     {isDropdownOpen && dropdownMenu()}
@@ -155,8 +158,10 @@ const Navigation = () => {
             <Link to="/products" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
               Products
             </Link>
-            {user && user.isSeller && (
-              <Link to="/sell" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Sell</Link>
+            {user && user.role === 'seller' && (
+              <Link to="/sell" onClick={closeMobileMenu} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">
+                Sell
+              </Link>
             )}
           </div>
         </div>

@@ -209,7 +209,7 @@ const SellProduct = () => {
               type="submit"
               className="px-4 py-2 bg-primary text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary sm:w-auto transform hover:scale-105 transition duration-300"
             >
-              Add Product
+              Sell Product
             </button>
             <button
               type="button"

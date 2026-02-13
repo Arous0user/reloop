@@ -21,7 +21,11 @@ model User {
   reviewsReceived ClientReview[] @relation("reviewsReceived")
   sellerRating    Float?
   buyerRating     Float?
-  emailVerified   Boolean        @default(true) // Set to true by default
+  emailVerified   Boolean        @default(false)
+  emailVerificationToken String?
+  emailVerificationTokenExpires DateTime?
+  passwordResetToken          String?
+  passwordResetTokenExpires   DateTime?
   wishlist        Wishlist[] // Added wishlist relation
   walletBalance   Float          @default(0) // Added wallet balance field
   referralCode    String?        @unique
@@ -37,6 +41,7 @@ model Product {
   slug        String   @unique
   description String
   priceCents  Int
+  discount    Int      @default(0)
   stock       Int      @default(0)
   soldOut     Boolean  @default(false)
 

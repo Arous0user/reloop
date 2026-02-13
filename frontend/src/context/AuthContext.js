@@ -60,13 +60,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, isSeller = false) => {
     try {
       const response = await api.post('/api/auth/register', { name, email, password, isSeller });
-      const { user, accessToken, refreshToken } = response.data; // Extract user and tokens
-      
-      setUser(user); // Set user in state
-      localStorage.setItem('token', accessToken); // Store access token
-      localStorage.setItem('refreshToken', refreshToken); // Store refresh token
-      
-      return { success: true, user }; // Return success and user data
+      return { success: true, message: response.data.message };
     } catch (error) {
       console.error('Register error:', error);
       return { success: false, error: error.response?.data?.message || 'Failed to create account' };

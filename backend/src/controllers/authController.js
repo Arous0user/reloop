@@ -58,6 +58,10 @@ const register = async (req, res) => {
     // Generate referral code
     const referralCode = await generateReferralCode();
     
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const tokenExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
     // Create user
     const user = await prisma.user.create({
       data: {
@@ -66,21 +70,34 @@ const register = async (req, res) => {
         passwordHash,
         isSeller: isSeller || false,
         role: isSeller ? 'seller' : 'buyer',
-        emailVerified: true, // Temporarily set to true
         referralCode,
+        emailVerificationToken: otp,
+        emailVerificationTokenExpires: tokenExpires,
       }
     });
+
+    // Send verification email
+    const message = `
+      <h1>Email Verification</h1>
+      <p>Your OTP for email verification is:</p>
+      <h2>${otp}</h2>
+      <p>This OTP will expire in 10 minutes.</p>
+    `;
     
-    // Generate tokens
-    const { accessToken, refreshToken } = generateTokens(user.id, user.role);
-    
-    // Remove password hash from response
-    const { passwordHash: _, ...userWithoutPassword } = user;
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Email Verification OTP',
+        html: message,
+      });
+    } catch (error) {
+      console.error('Email sending error:', error);
+      // In a real app, you might want to handle this differently,
+      // e.g., by deleting the user or requeueing the email.
+    }
     
     res.status(201).json({
-      user: userWithoutPassword,
-      accessToken,
-      refreshToken
+      message: 'Registration successful. Please check your email for the OTP to verify your account.'
     });
   } catch (error) {
     console.error('Registration error:', error);
@@ -88,9 +105,43 @@ const register = async (req, res) => {
   }
 };
 
-// Verify email with OTP (this function will not be used for now)
+// Verify email
 const verifyEmail = async (req, res) => {
-  res.status(501).json({ message: 'Email verification is temporarily disabled.' });
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: 'Email and OTP are required' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        email,
+        emailVerificationToken: otp,
+        emailVerificationTokenExpires: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationTokenExpires: null,
+      },
+    });
+
+    res.json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Email verification error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 
@@ -108,9 +159,9 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // if (!user.emailVerified) { // Temporarily removed
-    //   return res.status(401).json({ message: 'Email not verified' });
-    // }
+    if (!user.emailVerified) {
+      return res.status(401).json({ message: 'Email not verified' });
+    }
     
     // Check password
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
@@ -282,6 +333,96 @@ const validateReferral = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const tokenExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetToken: hashedToken,
+        passwordResetTokenExpires: tokenExpires,
+      },
+    });
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const message = `
+      <h1>Password Reset</h1>
+      <p>Please click the link below to reset your password:</p>
+      <a href="${resetUrl}">${resetUrl}</a>
+      <p>This link will expire in 10 minutes.</p>
+    `;
+
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: 'Password Reset',
+        html: message,
+      });
+    } catch (error) {
+      console.error('Email sending error:', error);
+      // In a real app, you might want to handle this differently
+    }
+
+    res.json({ message: 'Password reset link sent to your email' });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: 'Password reset token is required' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await prisma.user.findFirst({
+      where: {
+        passwordResetToken: hashedToken,
+        passwordResetTokenExpires: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired password reset token' });
+    }
+
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        passwordResetToken: null,
+        passwordResetTokenExpires: null,
+      },
+    });
+
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -291,4 +432,6 @@ module.exports = {
   refreshToken,
   verifyEmail,
   validateReferral,
+  forgotPassword,
+  resetPassword,
 };

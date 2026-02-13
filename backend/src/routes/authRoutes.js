@@ -8,6 +8,8 @@ const {
   refreshToken,
   verifyEmail,
   validateReferral,
+  forgotPassword,
+  resetPassword,
 } = require('../controllers/authController');
 const authMiddleware = require('../middleware/authMiddleware');
 
@@ -21,5 +23,7 @@ router.get('/:userId', getUserProfileById);
 router.post('/refresh-token', refreshToken);
 router.post('/verify-email', verifyEmail);
 router.post('/validate-referral', validateReferral);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 module.exports = router;

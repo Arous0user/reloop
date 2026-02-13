@@ -19,6 +19,8 @@ import About from './pages/About';
 import TermsAndConditions from './pages/TermsAndConditions'; // Import TermsAndConditions
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import VerifyEmail from './pages/VerifyEmail';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Footer from './components/Footer';
 import Notification from './components/Notification'; // Import Notification
 
@@ -39,6 +41,8 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password/:token" element={<ResetPassword />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/user/:userId" element={<UserProfile />} />
                   <Route path="/sell" element={<SellProduct />} />

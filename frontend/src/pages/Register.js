@@ -24,10 +24,10 @@ const Register = () => {
       setError('');
       setLoading(true);
       
-      const result = await register(name, email, password, true);
+      const result = await register(name, email, password, false); // Assuming isSeller is false for now
       
       if (result.success) {
-        navigate('/'); // Redirect to home page after successful registration
+        navigate(`/verify-email?email=${email}`);
       } else {
         setError(result.error || 'Failed to create account');
       }
